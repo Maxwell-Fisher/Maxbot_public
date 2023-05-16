@@ -101,13 +101,13 @@ if (response === lastMessageSent[channelID]) {
 
 
 if (response === "Bye!") {
-	lastMessageSentTime[channelID] = lastMessageSentTime[channelID] + 50;
+	lastSentMessageTime[channelID] = lastSentMessageTime[channelID] - 45;
 }
 
 if (response === "Goodbye!") {
-	lastMessageSentTime[channelID] = lastMessageSentTime[channelID] + 50;
+	lastSentMessageTime[channelID] = lastSentMessageTime[channelID] - 45;
 }
 
 if (response === "Goodbye") {
-	lastMessageSentTime[channelID] = lastMessageSentTime[channelID] + 50;
+	lastSentMessageTime[channelID] = lastSentMessageTime[channelID] - 45;
 }
