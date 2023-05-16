@@ -1,5 +1,10 @@
 //This is part of the flag system to decide whether or not Maxbot should respond to any given message, though there are some other factors as well which are used later on.
 
+//Note: bot commands follow the flag system, meaning they will only work in the same cases as the bot.
+//This usually works well, but can be annoying at times to have to ping the bot in a separate message before using commands.
+//I may make them not follow this, but the syntax is simple enough that they could accidentally be used,
+//so instead I'll probably just add slash commands as an alternative (while keeping the current system as well to allow both).
+
 var check = 0;
 
 	//Special checks ##########################################################################################
