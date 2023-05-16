@@ -1,6 +1,7 @@
 //This is part of the code which filters the bot's responses for multiple reasons
 
 //Replace name variable
+//This will soon be deprecated, as the bot now gets name context as net input
 var response = response.replace('$%userName%', user);
 
 //Remove pings
