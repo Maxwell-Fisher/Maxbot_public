@@ -9,6 +9,7 @@ var check = 0;
 
 	//Prevent responses to other bots
 	if (typeof bot.users[userID] !== 'undefined') {
+		//This is for the case of webhooks, which behave weirdly compared to normal bots & users
 		if (!(bot.users[userID].discriminator === "0000")) {
 			if (bot.users[userID].bot) {
 				return;
@@ -16,44 +17,59 @@ var check = 0;
 		}
 	}
 	
-	//Prevent responses to self, even if not running on bot account
+	//Prevent responses to self, even if not running on bot account.
+	//Currently redundant as this always runs on one of the 3 bot users,
+	//but may become needed if webhooks are ever used or if I decide to
+	//make the bot source code fully public and someone decided to selfbot.
 	if (userID === bot.id) {
 		return;
 	}
 
 	//Special checks ##########################################################################################
 
+	//This may cause issues if the bot's username is changed
+	//to a common phrase/word, but for now it works well
 	if (message.includes(bot.username)) {
 		var check = 1;
 	}
 
+	//Respond to pings
 	if (message.includes(bot.id)) {
 		var check = 1;
 	}
 
+	//Respond to the name `Maxbot`.
+	//Can be annoying, may eventually add a channel specific
+	//flag in order to let people turn it off
 	if (message.toLowerCase().includes('maxbot')){
 		var check = 1;
 	}
 
-	//Always respond when DMed
+	//Respond to DMs, and in group chats once Discord adds that.
+	//Group chats may be an issue though,
+	//should add a flag to disable that as well.
 	if (channelID in bot.directMessages) {
 		var check = 1;
 	}
 
 	//Last channel used
 	if (channelID == currentChannel) {
+		//This seems redundant but oh well, it works
 		if (Math.floor(Date.now() / 1000) - timeLastMentioned[channelID] < 60) {
 			var check = 1;
 		}
 	}
 
+	//Update last message sent time because it should be updated.
 	if (check === 1) {
 		timeLastMentioned[channelID] = Math.floor(Date.now() / 1000);
 	}
 
 	//If messaged recently
+	//Should add a message length variable to this like in the code to collect training data
 	if (Math.floor(Date.now() / 1000) - timeLastMentioned[channelID] < 30) {
 		var check = 1;
+		//Why did I write it like this
 		timeLastMentioned[channelID] = Math.floor(Date.now() / 1000);
 	}
 
@@ -101,7 +117,7 @@ if (message === lastMessageSent[channelID]) {
 
 
 
-//Stop bot from saying the same thing on repeat
+//Stop bot from saying the same thing twice in a row within 30 seconds
 if (response === lastMessageSent[channelID]) {
 	if (timeSinceLastMessage < 30) {
 		return;
