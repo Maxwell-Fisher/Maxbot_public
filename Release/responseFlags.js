@@ -7,6 +7,20 @@
 
 var check = 0;
 
+	//Prevent responses to other bots
+	if (typeof bot.users[userID] !== 'undefined') {
+		if (!(bot.users[userID].discriminator === "0000")) {
+			if (bot.users[userID].bot) {
+				return;
+			}
+		}
+	}
+	
+	//Prevent responses to self, even if not running on bot account
+	if (userID === bot.id) {
+		return;
+	}
+
 	//Special checks ##########################################################################################
 
 	if (message.includes(bot.username)) {
