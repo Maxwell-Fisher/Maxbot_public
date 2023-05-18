@@ -8,6 +8,7 @@
 var check = 0;
 
 	//Prevent responses to other bots
+	//Note to self: doesn't work
 	if (typeof bot.users[userID] !== 'undefined') {
 		//This is for the case of webhooks, which behave weirdly compared to normal bots & users
 		if (!(bot.users[userID].discriminator === "0000")) {
