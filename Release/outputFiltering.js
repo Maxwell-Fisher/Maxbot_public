@@ -16,6 +16,7 @@ var response = response.replace(/insert_slur_here/mig, '`[Text manually removed 
 var response = response.replace(/insert_felony_here/mig, '`[Text manually removed by admin for legal reasons]`');
 
 //Please stop giving children my IP address
+//https://cdn.discordapp.com/attachments/730156029987520694/1116660043476123758/image.png
 var response = response.replace('24.119.42.3', '`[Text manually removed by admin]`');
 
 if (message.toLowerCase().includes('make')) {
