@@ -11,6 +11,7 @@ var check = 0;
 	//Note to self: doesn't work
 	if (typeof bot.users[userID] !== 'undefined') {
 		//This is for the case of webhooks, which behave weirdly compared to normal bots & users
+		//This just doesn't work with any bots which have the new pomelo username format. Oh well ¯\_(ツ)_/¯
 		if (!(bot.users[userID].discriminator === "0000")) {
 			if (bot.users[userID].bot) {
 				return;
