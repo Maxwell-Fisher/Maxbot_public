@@ -42,14 +42,18 @@ if (Math.floor(Date.now() / 1000) - lastSentMessageTime[channelID] < (60 + Math.
 }
 
 if (userID !== "524813260525142047") { /* Don't log responses to self */
-	if (userID !== "730125432703418419") { /* Don't log responses to Maxbot release */
-		if (userID !== "999057147604246538") { /* Don't log responses to Maxbot beta */
+	//if (userID !== "730125432703418419") { /* Don't log responses to Maxbot release */
+		//if (userID !== "999057147604246538") { /* Don't log responses to Maxbot beta */
 			if (userID !== "742275903987384361") { /* Don't log responses to Maxbot alpha */
 				lastSentMessageTime[channelID] = Math.floor(Date.now() / 1000);
 				lastMessage[channelID] = message;
 				lastMessageUserID[channelID] = userID;
 				lastMessageUsername[channelID] = IOsanitize(user);
 			}
-		}
-	}
+		//}
+	//}
+}
+
+function IOsanitize(input) {
+	return input.replace(/\\/mig, "\\\\").replace(/'/mig, '\\\'').replace(/\n/mig, ' ').trimLeft().trimRight()
 }
