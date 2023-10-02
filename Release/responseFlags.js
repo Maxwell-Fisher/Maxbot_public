@@ -29,21 +29,24 @@ var check = 0;
 
 	//Special checks ##########################################################################################
 
-	//This may cause issues if the bot's username is changed
-	//to a common phrase/word, but for now it works well
-	if (message.includes(bot.username)) {
-		var check = 1;
+	//Always respond in channels which contain the word "Maxbot"
+	if (!(channelID in bot.directMessages)) {
+		if (bot.channels[channelID].name.toLowerCase().includes('maxbot')) {
+			var check = 1;
+		}
+	}
+
+	//Respond to its name (without an actual ping) in bot related channels
+	if (!(channelID in bot.directMessages)) {
+		if (bot.channels[channelID].name.toLowerCase().includes('bot') || bot.channels[channelID].name.toLowerCase().includes('spam')) {
+			if (message.includes(bot.username) || message.toLowerCase().includes('maxbot')) {
+				var check = 1;
+			}
+		}
 	}
 
 	//Respond to pings
 	if (message.includes(bot.id)) {
-		var check = 1;
-	}
-
-	//Respond to the name `Maxbot`.
-	//Can be annoying, may eventually add a channel specific
-	//flag in order to let people turn it off
-	if (message.toLowerCase().includes('maxbot')){
 		var check = 1;
 	}
 
@@ -96,6 +99,21 @@ var check = 0;
 		if (bot.channels[channelID].guild_id === "1091155787751104614") {
 			if (channelID !== "1091155789617573960") {
 				var check = 0;
+			}
+		}
+	}
+	
+	
+	
+	//Never respond in channels meant for serious topics
+	if (!(channelID in bot.directMessages)) {
+		if (!(bot.channels[channelID].name.toLowerCase().includes('unserious'))) { //Haha funny channel
+			if (!(bot.channels[channelID].name.toLowerCase().includes('advent'))) { //Advent(ure(s))
+				if (!(bot.channels[channelID].name.toLowerCase().includes('invent'))) { //Not for pyramid schemes
+					if (bot.channels[channelID].name.toLowerCase().includes('vent') || bot.channels[channelID].name.toLowerCase().includes('serious')) {
+						var check = 0;
+					}
+				}
 			}
 		}
 	}
