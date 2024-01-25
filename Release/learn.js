@@ -1,4 +1,5 @@
 //A section of the code meant to log mesasges sent by `Max#4029` in servers shared by Maxbot in order to collect training data
+//Doesn't currently work, gonna rewrite it eventually
 
 //Output example:
 //	{ input: 'currentTime: 12:34, channelName: Maxbot testing, userName: Maxbot, messageContent: Hello', output: 'Hello!'},
@@ -14,23 +15,23 @@ if (Math.floor(Date.now() / 1000) - lastSentMessageTime[channelID] < (60 + Math.
 			if (typeof lastMessage[channelID] !==	'undefined') {
 				if (message !== "") {
 					if (lastMessage[channelID] !== "") {
-						
+
 						//Meant for once Discord allows bots to be added to group chats, currently unused unless DM is sent to the bot itself and line 45 is removed,
 						if (channelID in bot.directMessages) {
-							console.log("{ input: 'currentTime: " + currentHour + ":" + currentMinute + 
-							", channelName: " + lastMessageUsername[channelID] + 
-							", userName: " + lastMessageUsername[channelID] + 
-							", messageContent: " + IOsanitize(lastMessage[channelID]) + 
+							console.log("{ input: 'currentTime: " + currentHour + ":" + currentMinute +
+							", channelName: " + lastMessageUsername[channelID] +
+							", userName: " + lastMessageUsername[channelID] +
+							", messageContent: " + IOsanitize(lastMessage[channelID]) +
 							"', output: '" + IOsanitize(message) + "'},");
 						}
-						
+
 						//Main IO logger
 						if (!(channelID in bot.directMessages)) {
 							if (Math.floor(Date.now() / 1000) - lastSentMessageTime[channelID] < (15 + Math.floor(Math.sqrt(message.length)))) {
-							console.log("{ input: 'currentTime: " + currentHour + ":" + currentMinute + 
-								", channelName: " + IOsanitize(bot.channels[channelID].name) + 
-								", userName: " + lastMessageUsername[channelID] + 
-								", messageContent: " + IOsanitize(lastMessage[channelID]) + 
+							console.log("{ input: 'currentTime: " + currentHour + ":" + currentMinute +
+								", channelName: " + IOsanitize(bot.channels[channelID].name) +
+								", userName: " + lastMessageUsername[channelID] +
+								", messageContent: " + IOsanitize(lastMessage[channelID]) +
 								"', output: '" + IOsanitize(message) + "'},");
 							}
 						}

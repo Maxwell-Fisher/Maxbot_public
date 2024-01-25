@@ -1,163 +1,119 @@
 //This is part of the flag system to decide whether or not Maxbot should respond to any given message, though there are some other factors as well which are used later on.
 
-//Note: bot commands follow the flag system, meaning they will only work in the same cases as the bot.
-//This usually works well, but can be annoying at times to have to ping the bot in a separate message before using commands.
-//I may make them not follow this, but the syntax is simple enough that they could accidentally be used,
-//so instead I'll probably just add slash commands as an alternative (while keeping the current system as well to allow both).
-
 var check = 0;
 
-	//Prevent responses to other bots
-	//Note to self: doesn't work
-	if (typeof bot.users[userID] !== 'undefined') {
-		//This is for the case of webhooks, which behave weirdly compared to normal bots & users
-		//This just doesn't work with any bots which have the new pomelo username format. Oh well ¯\_(ツ)_/¯
-		if (!(bot.users[userID].discriminator === "0000")) {
-			if (bot.users[userID].bot) {
-				return;
-			}
-		}
-	}
-	
-	//Prevent responses to self, even if not running on bot account.
-	//Currently redundant as this always runs on one of the 3 bot users,
-	//but may become needed if webhooks are ever used or if I decide to
-	//make the bot source code fully public and someone decided to selfbot.
-	if (userID === bot.id) {
-		return;
-	}
+//Prevent responses to other bots
+if (message.author.bot) {
+	return;
+}
 
-	//Special checks ##########################################################################################
+//Prevent responses to self, even if not running on bot account.
+//Currently not in use as this always runs on one of the 3 bot users,
+//but may become needed if webhooks are ever used or if I decide to
+//make the bot source code fully public and someone decides to selfbot.
+	//(There was code here at one point)
 
-	//Always respond in channels which contain the word "Maxbot"
-	if (!(channelID in bot.directMessages)) {
-		if (bot.channels[channelID].name.toLowerCase().includes('maxbot')) {
-			var check = 1;
-		}
+//Prevent responses in channels without message permissions
+if (!(message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.SendMessages))) {
+	return;
+}
+
+//Respond to DMs
+if (message.channel.type === 'DM' || message.guild == null) {
+	var check = 1;
+} else {
+	//Respond in channels containing the word Maxbot (only if not a DM (cause that's redundant))
+	if (message.channel.name.toLowerCase().includes('maxbot')) {
+		var check = 1;
 	}
+}
 
-	//Respond to its name (without an actual ping) in bot related channels
-	if (!(channelID in bot.directMessages)) {
-		if (bot.channels[channelID].name.toLowerCase().includes('bot') || bot.channels[channelID].name.toLowerCase().includes('spam')) {
-			if (message.includes(bot.username) || message.toLowerCase().includes('maxbot')) {
-				var check = 1;
-			}
-		}
-	}
+//Respond to pings (only check for bots ID, not if the ID is a real ping. Can cause issues but I prefer this method.)
+if (messageInput.includes(client.user.id)) {
+	var check = 1;
+}
 
-	//Respond to pings
-	if (message.includes(bot.id)) {
+//Respond to messages which are directly replying to the bot
+	if (message.mentions.repliedUser?.toString().includes(client.user.id)) {
 		var check = 1;
 	}
 
-	//Respond to DMs, and in group chats once Discord adds that.
-	//Group chats may be an issue though,
-	//should add a flag to disable that as well.
-	if (channelID in bot.directMessages) {
+//Respond to its name (without an actual ping) in bot related channels
+	//I removed the code here because it was annoying me
+
+	//Respond if messaged recently in the current channel
+	if (Math.floor(Date.now() / 1000) - timeLastMentioned[message.channel.id] < 15 || Math.floor(Date.now() / 1000) - timeLastMentioned[message.channel.id] < (messageInput.length / 2)) {
 		var check = 1;
 	}
 
-	//Last channel used
-	if (channelID == currentChannel) {
-		//This seems redundant but oh well, it works
-		if (Math.floor(Date.now() / 1000) - timeLastMentioned[channelID] < 60) {
-			var check = 1;
+
+// ...
+
+
+//Below code gives reasons to not respond to a certain message:
+if (!(message.channel.type === 'DM' || message.guild == null)) {
+
+	//Don't respond in serious channels
+	if (!(message.channel.name.toLowerCase().includes('unserious'))) {
+		if (message.channel.name.toLowerCase().includes('serious')) {
+			var check = 0;
 		}
 	}
 
-	//Update last message sent time because it should be updated.
-	if (check === 1) {
-		timeLastMentioned[channelID] = Math.floor(Date.now() / 1000);
-	}
-
-	//If messaged recently
-	//Should add a message length variable to this like in the code to collect training data
-	if (Math.floor(Date.now() / 1000) - timeLastMentioned[channelID] < 30) {
-		var check = 1;
-		//Why did I write it like this
-		timeLastMentioned[channelID] = Math.floor(Date.now() / 1000);
-	}
-
-	//Whitelist channels below ################################################################################
-
-	//Maxbot v.3 # whitelist
-	if (channelID == 1091156149178470463) {
-		var check = 1;
-	}
-
-	//Blacklist channels below ################################################################################
-
-	//Maxbot v.3 # blacklist
-	if (channelID == 1091156211686178888) {
-		var check = 0;
-	}
-
-	//Server blacklists #######################################################################################
-	
-	if (!(channelID in bot.directMessages)) {
-		//Example server blacklist for entire server except one channel
-		if (bot.channels[channelID].guild_id === "1091155787751104614") {
-			if (channelID !== "1091155789617573960") {
+	//Don't respond in venting channels
+	if (!(message.channel.name.toLowerCase().includes('invent'))) {
+		if (!(message.channel.name.toLowerCase().includes('advent'))) {
+			if (message.channel.name.toLowerCase().includes('vent')) {
 				var check = 0;
 			}
 		}
 	}
-	
-	
-	
-	//Never respond in channels meant for serious topics
-	if (!(channelID in bot.directMessages)) {
-		if (!(bot.channels[channelID].name.toLowerCase().includes('unserious'))) { //Haha funny channel
-			if (!(bot.channels[channelID].name.toLowerCase().includes('advent'))) { //Advent(ure(s))
-				if (!(bot.channels[channelID].name.toLowerCase().includes('invent'))) { //Not for pyramid schemes
-					if (bot.channels[channelID].name.toLowerCase().includes('vent') || bot.channels[channelID].name.toLowerCase().includes('serious')) {
-						var check = 0;
-					}
-				}
-			}
-		}
+
+	//Don't respond in NSFW channels
+	if (message.channel.name.toLowerCase().includes('nsfw')) {
+		var check = 0;
 	}
 
+	//Don't respond if kicked using `.mb kick` recently (within 30 seconds)
+	if (Math.floor(Date.now() / 1000) - timeLastKicked[message.channel.id] < 30) {
+		var check = 0;
+	}
+
+}
+
+if (check === 1) {
+	timeLastMentioned[message.channel.id] = (Math.floor(Date.now() / 1000) + (Math.floor(Date.now() / 1000) - timeLastMentioned[message.channel.id]) / 60);
+}
 
 
 // ...
-
 
 
 //Stop bot from getting into loops with other bots/people testing it
-if (message === lastMessageSent[channelID]) {
+if (messageInput.toLowerCase() === String(lastMessageSent[message.channel.id]).toLowerCase()) {
 	if (timeSinceLastMessage < 30) {
 		return;
 	}
 }
-
-
-
-// ...
-
-
 
 //Stop bot from saying the same thing twice in a row within 30 seconds
-if (response === lastMessageSent[channelID]) {
+if (response.toLowerCase === String(lastMessageSent[message.channel.id]).toLowerCase()) {
 	if (timeSinceLastMessage < 30) {
 		return;
 	}
 }
 
 
-
 // ...
 
 
-
-if (response === "Bye!") {
-	lastSentMessageTime[channelID] = lastSentMessageTime[channelID] - 45;
-}
-
-if (response === "Goodbye!") {
-	lastSentMessageTime[channelID] = lastSentMessageTime[channelID] - 45;
-}
-
-if (response === "Goodbye") {
-	lastSentMessageTime[channelID] = lastSentMessageTime[channelID] - 45;
+//Stop talking if it should (without needing to wait as long or use `.mb kick`)
+if (
+	response.toLowerCase().includes('goodbye') || messageInput.toLowerCase().includes('goodbye') ||
+	response.toLowerCase().includes('go away') || messageInput.toLowerCase().includes('go away') ||
+	response.toLowerCase().includes('shut up') || messageInput.toLowerCase().includes('shut up') ||
+	response.toLowerCase().includes('stop') || messageInput.toLowerCase().includes('stop') ||
+	response.toLowerCase().includes('kick') || messageInput.toLowerCase().includes('kick')
+) {
+	lastMessageSentTime[message.channel.id] = lastMessageSentTime[message.channel.id] - 10;
 }
